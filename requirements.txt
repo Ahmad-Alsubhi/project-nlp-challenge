@@ -7,7 +7,7 @@ pandas
 numpy
 joblib
 scikit-learn
-tensorflow
+
 keras
 flask-upload
 werkzeug

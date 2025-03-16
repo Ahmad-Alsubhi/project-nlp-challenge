@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Analysis - Text Classification</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="static/script.js"></script>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>News Analysis - Text Classification</h1>
+            <p>Smart system for classifying news and texts to distinguish between real and fake news</p>
+            </div>
+            
+            <div class="options-container">
+                <div class="option-card" onclick="showPanel('textPanel')">
+                    <div class="option-icon">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <h3>Text Input</h3>
+                    <p>Enter text directly for instant analysis and classification</p>
+                </div>
+                
+                <div class="option-card" onclick="showPanel('txtFilePanel')">
+                    <div class="option-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Text File</h3>
+                    <p>Analyze content of TXT format text file</p>
+                </div>
+                
+                <div class="option-card" onclick="showPanel('csvPanel')">
+                    <div class="option-icon">
+                        <i class="fas fa-file-csv"></i>
+                    </div>
+                    <h3>Data File</h3>
+                    <p>Process CSV or Excel files and add classification results</p>
+                </div>
+            </div>
+            
+            <!-- Text Input Panel -->
+            <div id="textPanel" class="action-panels">
+                <div class="panel-header">
+                    <i class="fas fa-keyboard"></i>
+                    <h2>Text Input Analysis</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="textInput">Enter text to analyze:</label>
+                    <textarea id="textInput" class="form-control" rows="6" placeholder="Write or paste text here..."></textarea>
+                </div>
+                
+                <button id="analyzeTextBtn" class="btn" onclick="predictText()">
+                    <i class="fas fa-search"></i> Analyze Text
+                </button>
+                
+                <div id="textResult" class="result-container">
+                    <i class="fas fa-check-circle result-icon true"></i>
+                    <div class="result-text true">Real News</div>
+                    <p class="result-description">Text successfully classified by the system</p>
+                    <button class="back-btn" onclick="resetPanel('textPanel')">
+                        <i class="fas fa-redo"></i> Analyze Another Text
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Text File Panel -->
+            <div id="txtFilePanel" class="action-panels">
+                <div class="panel-header">
+                    <i class="fas fa-file-alt"></i>
+                    <h2>Text File Analysis</h2>
+                </div>
+                
+                <label for="fileInputTxt" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Click to choose file or drag it here</span>
+                </label>
+                <input type="file" id="fileInputTxt" class="file-input" accept=".txt" onchange="handleFileSelect(this, 'txtFileName')">
+                <div id="txtFileName" class="file-name"></div>
+                
+                <button id="analyzeTxtBtn" class="btn" onclick="predictFile()" disabled>
+                    <i class="fas fa-search"></i> Analyze File
+                </button>
+                
+                <div id="fileResult" class="result-container">
+                    <i class="fas fa-check-circle result-icon true"></i>
+                    <div class="result-text true">Real News</div>
+                    <p class="result-description">File content successfully classified</p>
+                    <button class="back-btn" onclick="resetPanel('txtFilePanel')">
+                        <i class="fas fa-redo"></i> Analyze Another File
+                    </button>
+                </div>
+            </div>
+            
+            <!-- CSV/Excel File Panel -->
+            <div id="csvPanel" class="action-panels">
+                <div class="panel-header">
+                    <i class="fas fa-file-csv"></i>
+                    <h2>Data File Processing</h2>
+                </div>
+                
+                <label for="fileInputCSV" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Click to choose CSV/Excel file or drag it here</span>
+                </label>
+                <input type="file" id="fileInputCSV" class="file-input" accept=".csv, .xlsx, .xls" onchange="handleFileSelect(this, 'csvFileName')">
+                <div id="csvFileName" class="file-name"></div>
+                
+                <button id="analyzeCsvBtn" class="btn" onclick="predictCSV()" disabled>
+                    <i class="fas fa-cogs"></i> Process File
+                </button>
+                
+                <div id="csvResult" class="result-container">
+                    <i class="fas fa-check-circle result-icon true"></i>
+                    <div class="result-text true">Processing Completed</div>
+                    <p class="result-description">All texts in file have been analyzed and classified</p>
+                    <a id="downloadLink" class="download-link" download>
+                        <i class="fas fa-download"></i> Download Updated File
+                    </a>
+                    <br>
+                    <button class="back-btn" onclick="resetPanel('csvPanel')">
+                        <i class="fas fa-redo"></i> Process Another File
+                    </button>
+                </div>
+            </div>
+    
+        
+</body>
+</html>

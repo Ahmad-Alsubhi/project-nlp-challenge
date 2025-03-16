@@ -1,4 +1,6 @@
 pip==25.0.1
+python==3.10.7
+
 flask
 gunicorn
 flask-wtf

@@ -5,5 +5,15 @@ flask-wtf
 flask-cors
 flask-session
 pandas
+scikit-learn
+
 numpy
 joblib
+blinker
+click
+Flask 
+itsdangerous
+Jinja2
+MarkupSafe
+packaging
+Werkzeug

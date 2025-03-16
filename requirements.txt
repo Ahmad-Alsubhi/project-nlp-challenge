@@ -12,3 +12,6 @@ keras
 flask-upload
 werkzeug
 docker
+pip==25.0.1
+setuptools
+wheel

@@ -7,12 +7,3 @@ flask-session
 pandas
 numpy
 joblib
-scikit-learn
-
-keras
-flask-upload
-werkzeug
-docker
-
-setuptools
-wheel

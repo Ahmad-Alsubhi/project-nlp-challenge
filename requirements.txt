@@ -1,0 +1,14 @@
+flask
+gunicorn
+flask-wtf
+flask-cors
+flask-session
+pandas
+numpy
+joblib
+scikit-learn
+tensorflow
+keras
+flask-upload
+werkzeug
+docker

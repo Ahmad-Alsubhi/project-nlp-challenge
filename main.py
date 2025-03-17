@@ -1,136 +1,100 @@
-# from flask import Flask, render_template, request, send_file
-# import pandas as pd
-# import joblib
-# import os
-
-# app = Flask(__name__)
-
-# # تحميل النموذج المحفوظ
-# model = joblib.load('NLP_model.pkl')  # نموذج التصنيف
-# vectorizer = joblib.load('tfidf_vectorizer.pkl')  # نموذج تحويل النصوص إلى أرقام
-
-# @app.route('/templates')
-# def index():
-#     return render_template('index.html')
-
-# @app.route('/uploadfile', methods=['POST'])
-# def upload_file():
-#     if 'file' not in request.files:
-#         return "لم يتم العثور على ملف!", 400
-
-#     file = request.files['file']
-#     if file.filename == '':
-#         return "لم يتم اختيار ملف!", 400
-
-#     # قراءة ملف CSV
-#     df = pd.read_csv(file)
-
-#     # التحقق من وجود العمود المطلوب
-#     if 'text' not in df.columns:
-#         return "يجب أن يحتوي الملف على عمود 'text'.", 400
-
-#     # تحويل النصوص إلى أرقام باستخدام TF-IDF
-#     X_transformed = vectorizer.transform(df['text'])
-
-#     # تنفيذ التنبؤ
-#     predictions = model.predict(X_transformed)
-
-#     # إضافة القيم المتوقعة إلى العمود الجديد
-#     df['target'] = predictions
-
-#     # حفظ الملف الجديد
-#     new_filename = "after_predict.csv"
-#     df.to_csv(new_filename, index=False)
-
-#     return send_file(new_filename, as_attachment=True)
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
-from flask import Flask, render_template, request, jsonify, send_file
-import pandas as pd
+from flask import Flask, request, jsonify, render_template, send_file
 import joblib
-import os
+import pandas as pd
 
 app = Flask(__name__)
 
-# تحميل النموذج والـ TF-IDF Vectorizer
-model = joblib.load('NLP_model.pkl')
-vectorizer = joblib.load('tfidf_vectorizer.pkl')
+# Load the trained model and TF-IDF vectorizer
+model = joblib.load('models/NLP_model.pkl')
+vectorizer = joblib.load('models/tfidf_vectorizer.pkl')
 
+# Homepage route
 @app.route('/templates')
 def index():
     return render_template('index.html')
 
-# الطريقة 1: معالجة إدخال نص مباشر
+# Method 1: Process direct text input from the user
 @app.route('/predict_text', methods=['POST'])
 def predict_text():
     text = request.form.get("text")
     
+    # Check if text input is provided
     if not text:
-        return jsonify({"error": "لم يتم إدخال أي نص"}), 400
+        return jsonify({"error": "No text input provided"}), 400
 
-    # تحويل النص إلى شكل مناسب للنموذج
+    # Transform the text using the TF-IDF vectorizer
     X_transformed = vectorizer.transform([text])
+    # Make a prediction using the model
     prediction = model.predict(X_transformed)[0]
 
+    # Return the prediction as a JSON response
     return jsonify({"prediction": int(prediction)})
 
-# الطريقة 2: رفع ملف نصي (txt) وتحليل محتواه
+# Method 2: Process a text file (txt) and analyze its content
 @app.route('/predict_file', methods=['POST'])
 def predict_file():
+    # Check if a file is included in the request
     if 'file' not in request.files:
-        return jsonify({"error": "لم يتم العثور على ملف!"}), 400
+        return jsonify({"error": "No file found!"}), 400
 
     file = request.files['file']
+    # Check if the user selected a file
     if file.filename == '':
-        return jsonify({"error": "لم يتم اختيار ملف!"}), 400
+        return jsonify({"error": "No file selected!"}), 400
 
-    # قراءة محتوى الملف
+    # Read the content of the text file
     text = file.read().decode("utf-8").strip()
 
-    # تحويل النص إلى شكل مناسب للنموذج
+    # Transform the text using the TF-IDF vectorizer
     X_transformed = vectorizer.transform([text])
+    # Make a prediction using the model
     prediction = model.predict(X_transformed)[0]
 
+    # Return the prediction as a JSON response
     return jsonify({"prediction": int(prediction)})
 
-# الطريقة 3: رفع ملف CSV أو Excel وتحليل عمود text
+# Method 3: Process a CSV or Excel file and analyze the 'text' column
 @app.route('/predict_csv', methods=['POST'])
 def predict_csv():
+    # Check if a file is included in the request
     if 'file' not in request.files:
-        return jsonify({"error": "لم يتم العثور على ملف!"}), 400
+        return jsonify({"error": "No file found!"}), 400
 
     file = request.files['file']
+    # Check if the user selected a file
     if file.filename == '':
-        return jsonify({"error": "لم يتم اختيار ملف!"}), 400
+        return jsonify({"error": "No file selected!"}), 400
 
+    # Extract the file extension (csv or xlsx)
     file_ext = file.filename.split('.')[-1].lower()
     
-    # قراءة البيانات من CSV أو Excel
+    # Read the data based on the file extension
     if file_ext == 'csv':
         df = pd.read_csv(file)
     elif file_ext in ['xlsx', 'xls']:
         df = pd.read_excel(file)
     else:
-        return jsonify({"error": "يجب رفع ملف بصيغة CSV أو Excel!"}), 400
+        return jsonify({"error": "File must be in CSV or Excel format!"}), 400
 
-    # التحقق من وجود العمود المطلوب
+    # Check if the 'text' column exists in the file
     if 'text' not in df.columns:
-        return jsonify({"error": "يجب أن يحتوي الملف على عمود 'text'!"}), 400
+        return jsonify({"error": "The file must contain a 'text' column!"}), 400
 
-    # تنفيذ التنبؤ
+    # Transform the text data using the TF-IDF vectorizer
     X_transformed = vectorizer.transform(df['text'])
+    # Make predictions using the model
     predictions = model.predict(X_transformed)
 
-    # إضافة القيم المتوقعة إلى العمود الجديد
+    # Add the predictions as a new column in the dataframe
     df['target'] = predictions
 
-    # حفظ الملف الجديد
+    # Save the updated dataframe with predictions to a new file
     new_filename = "after_predict.csv"
     df.to_csv(new_filename, index=False)
 
+    # Return the new file as an attachment for download
     return send_file(new_filename, as_attachment=True)
 
+# Run the application
 if __name__ == '__main__':
     app.run()
